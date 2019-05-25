@@ -1,11 +1,14 @@
 import path from 'path'
 import express from 'express'
 import { ApolloServer, gql } from 'apollo-server-express'
-
+import webpack from 'webpack'
+import middleware from 'webpack-dev-middleware'
+import webpackConfig from './webpack.config'
+import hotMiddleware from 'webpack-hot-middleware'
 
 const typeDefs = gql`
   type Query {
-    hello: String
+	hello: String
   }
 `
 
@@ -23,6 +26,11 @@ const app = express(),
 server.applyMiddleware({app})
 app.use(express.static(DIST_DIR))
 
+const compiler = webpack(webpackConfig)
+app.use(middleware(compiler, {
+ noInfo: true, publicPath: webpackConfig.output.publicPath
+}))
+app.use(hotMiddleware(compiler))
 
 const PORT = process.env.PORT || 8080
 

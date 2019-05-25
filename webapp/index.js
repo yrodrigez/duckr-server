@@ -20,7 +20,6 @@ const client = new ApolloClient(
 const HELLO_WORLD = gql`
   {
 	hello
-	
   }
 `
 
