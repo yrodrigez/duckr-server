@@ -1,37 +1,38 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { ApolloClient } from 'apollo-client'
-import { HttpLink } from 'apollo-link-http'
+import { createHttpLink } from 'apollo-link-http'
+import { split } from 'apollo-link'
 import { InMemoryCache } from 'apollo-cache-inmemory'
-import { ApolloProvider, Query } from 'react-apollo'
-import gql from 'graphql-tag'
+import { ApolloProvider } from 'react-apollo-hooks'
+import { WebSocketLink } from 'apollo-link-ws'
+import UserView from './UserView'
+import { getMainDefinition } from 'apollo-utilities'
 
 
-const client = new ApolloClient(
-  // By default, this client will send queries to the
-  //  `/graphql` endpoint on the same host
-  // Pass the configuration option { uri: YOUR_GRAPHQL_API_URL } to the `HttpLink` to connect
-  // to a different host
-  {
-	link: new HttpLink(),
-	cache: new InMemoryCache(),
-  })
+const httpLink = createHttpLink({
+																	uri: 'http://localhost:8080/graphql',
+																})
+const wsLink = new WebSocketLink({
+																	 uri: 'ws://localhost:8080/graphql',
+																 })
 
-const HELLO_WORLD = gql`
-  {
-	hello
-  }
-`
+const client = new ApolloClient({
+																	// By default, this client will send queries to the
+																	//  `/graphql` endpoint on the same host
+																	// Pass the configuration option { uri: YOUR_GRAPHQL_API_URL } to the `HttpLink` to connect
+																	// to a different host
+
+																	link: split(({query}) => {
+																		const {kind, operation} = getMainDefinition(query)
+																		return kind === 'OperationDefinition' && operation === 'subscription'
+																	}, wsLink, httpLink),
+																	cache: new InMemoryCache(),
+																})
 
 ReactDOM.render(
-  <ApolloProvider client={client}>
-	<Query query={HELLO_WORLD}>
-	  {({loading, error, data}) => {
-		if (loading) return 'Loading!...'
-		if (error) return `Error! ${error.message}`
-		return <div>{data.hello}</div>
-	  }}
-	</Query>
-  </ApolloProvider>,
-  document.getElementById('root'),
+	<ApolloProvider client={client}>
+		<UserView/>
+	</ApolloProvider>,
+	document.getElementById('root'),
 )
