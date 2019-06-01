@@ -13,8 +13,8 @@ const runWebpackWatch = () => {
 	watcher.on('close', code => console.log('webpack watch exited with code', code))
 }
 
-connectDB().then(async () => {
-	const {server, apolloServer, PORT} = configureServer()
+connectDB().then(async() => {
+	const { server, apolloServer, PORT } = configureServer()
 	server.listen(PORT, () => {
 		console.log(`App listening to ${PORT}....`)
 		console.log(`🚀 Server ready at http://localhost:${PORT}${apolloServer.graphqlPath}`)

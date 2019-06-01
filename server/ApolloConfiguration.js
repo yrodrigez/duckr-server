@@ -1,14 +1,14 @@
 import { ApolloServer } from 'apollo-server-express'
 import UserDAL from './dal/UserDAL'
-import resolvers from './resolvers'
+import resolvers from './schemas/graphql/resolvers'
 import typeDefs from './typeDefs'
-
+ console.log(resolvers)
 
 const configureApollo = (middleware, subscriptionHandlers) => {
 	const apolloServer = new ApolloServer(
 		{
 			...typeDefs,
-			...resolvers,
+			resolvers,
 			dataSources: () => ({
 				userAPI: UserDAL,
 			}),
