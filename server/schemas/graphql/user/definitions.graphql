@@ -1,0 +1,10 @@
+type User {
+    username: String,
+    email: String,
+}
+input UserInput {
+    username: String,
+    email: String,
+    password: String,
+    registrationSource: String
+}
