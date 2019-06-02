@@ -1,6 +1,6 @@
 import { ApolloServer } from 'apollo-server-express'
-import UserDAL from './dal/UserDAL'
-import resolvers from './schemas/graphql/resolvers'
+import UserDAL from '../../dal/UserDAL'
+import resolvers from '../../schemas/graphql/resolvers'
 import typeDefs from './typeDefs'
  console.log(resolvers)
 

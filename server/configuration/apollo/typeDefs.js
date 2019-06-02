@@ -15,7 +15,7 @@ const walkSync = (dir, fileList = []) => {
 	return fileList
 }
 
-const SCHEMAS_DIR = path.join(__dirname, '/schemas/graphql')
+const SCHEMAS_DIR = path.join(__dirname, '../../schemas/graphql')
 
 const files = walkSync(SCHEMAS_DIR)
 let complete = ``

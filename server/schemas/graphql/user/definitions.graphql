@@ -2,6 +2,13 @@ type User {
     username: String,
     email: String,
 }
+
+input UserLoginInput {
+    username: String,
+    email: String,
+    password: String!
+}
+
 input UserInput {
     username: String,
     email: String,

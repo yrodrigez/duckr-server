@@ -1,4 +1,4 @@
-import configureServer from './configureServer'
+import configureServer from './configuration/configureServer'
 import { connectDB } from './dal'
 import { spawn } from 'child_process'
 
