@@ -1,0 +1,5 @@
+{
+  "env": {
+    "__MODE__": "development"
+  }
+}
