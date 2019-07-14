@@ -6,7 +6,7 @@ import typeDefs from './typeDefs'
 console.log(resolvers)
 
 const configureApollo = (middleware, subscriptionHandlers) => {
-  const apolloSer2ver = new ApolloServer(
+  const apolloServer = new ApolloServer(
     {
       ...typeDefs,
       resolvers,
