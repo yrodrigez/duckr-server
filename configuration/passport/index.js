@@ -9,30 +9,30 @@ import UserDAL from '../../dal/UserDAL'
 const WithSessionMongoStore = connectMongo(_session)
 
 const LOGIN_STRATEGY = {
-  LOCAL: 'local',
+	LOCAL: 'local',
 }
 
 passport.use(LOGIN_STRATEGY.LOCAL, new LocalStrategy(
-  {usernameField: 'email'},
-  async (email, password, onSuccess) => {
-    console.log(`Inside local strategy callback`, email, password, onSuccess)
-    const user = await UserDAL.findByUsernameAndPassword(email, password)
-    onSuccess(user)
-  },
+	{ usernameField: 'email' },
+	async(email, password, onSuccess) => {
+		console.log(`Inside local strategy callback`, email, password, onSuccess)
+		const user = await UserDAL.findByUsernameAndPassword(email, password)
+		onSuccess(user)
+	},
 ))
 
 const session = _session({
-  genid: () => {
-    console.log('Generating session...')
-    return uuid()
-  },
-  store: new WithSessionMongoStore({
-    mongooseConnection: mongoose.connection,
-    collection: 'session',
-  }),
-  secret: 'changeThisASAP',
-  resave: false,
-  saveUninitialized: true,
+	genid: () => {
+		console.log('Generating session...')
+		return uuid()
+	},
+	store: new WithSessionMongoStore({
+		mongooseConnection: mongoose.connection,
+		collection: 'session',
+	}),
+	secret: process.env.__MODE__ === 'development' ? `changeThisASAP` : `${uuid()}`,
+	resave: false,
+	saveUninitialized: true,
 })
 
-export {session, passport, LOGIN_STRATEGY}
+export { session, passport, LOGIN_STRATEGY }
