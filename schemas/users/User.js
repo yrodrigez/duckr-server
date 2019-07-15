@@ -55,18 +55,15 @@ userSchema.statics.findByUsername = async function(username) {
 	}))
 }
 
-userSchema.statics.findByUsernameAndPassword = async function(username, password) {
-	await this.findOne({ username }).exec(null, (err, user) => {
+userSchema.statics.findByEmailAndPassword = async function(email, password, onFinish) {
+	await this.findOne({ email }).exec(null, (err, user) => {
 		if(err) console.error(err)
+		if(!user) onFinish(new Error('User not found!'))
 
-		let match = false
-		comparePasswords(password, user.password, (err, isPasswordMatch) => {
-			if(err) console.error(err)
-			match = isPasswordMatch
-		})
+		let match = bcrypt.compareSync(password, user.password)
 
-		if(match) return
-		throw new Error('User not found')
+		if(match) onFinish(false, user)
+		else onFinish(new Error('Password does not match'))
 	})
 }
 

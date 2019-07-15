@@ -14,13 +14,24 @@ const LOGIN_STRATEGY = {
 
 passport.use(LOGIN_STRATEGY.LOCAL, new LocalStrategy(
 	{ usernameField: 'email' },
-	async(email, password, onSuccess) => {
-		console.log(`Inside local strategy callback`, email, password, onSuccess)
-		const user = await UserDAL.findByUsernameAndPassword(email, password)
-		onSuccess(user)
+	async(email, password, onFinish) => {
+		console.log(`Inside local strategy callback`, email, password, onFinish)
+		await UserDAL.findByEmailAndPassword(email, password, (err, user) => {
+			err && console.error(err)
+			if(!err) {
+				console.log(`User found: ${user}`)
+				onFinish(err, user)
+			}
+		})
 	},
 ))
+passport.serializeUser((user, done) => {
+	done(null, user)
+})
 
+passport.deserializeUser((user, done) => {
+	done(null, user)
+})
 const session = _session({
 	genid: () => {
 		console.log('Generating session...')

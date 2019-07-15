@@ -6,7 +6,6 @@ import { passport, session } from './passport'
 import bodyParser from 'body-parser'
 
 
-
 const devOrigin = ('http://localhost:8081')
 
 const configureServer = () => {
@@ -17,29 +16,29 @@ const configureServer = () => {
 	app.use(session)
 	app.use(passport.initialize())
 	app.use(passport.session())
-	app.use(bodyParser.json()); // support json encoded bodies
-	app.use(bodyParser.urlencoded({ extended: true }));
+	app.use(bodyParser.json()) // support json encoded bodies
+	app.use(bodyParser.urlencoded({ extended: true }))
 
-	app.get('/', (req, res) =>{
-		console.log(req)
-		console.log(res)
+	app.get('/', (req, res) => {
 		res.send(`Here! ${req.isAuthenticated()}`)
 	})
 
 	app.post('/login', (req, res, next) => {
 		console.log('Inside POST /login callback')
-		console.log(`req body: ${req.body.user}`)
-		passport.authenticate('local', { successRedirect: '/', failureRedirect: '/login' },(err, user, info) => {
-			console.log('Inside passport.authenticate() callback');
-			console.log(`req.session.passport: ${JSON.stringify(req.session.passport)}`)
-			console.log(`req.user: ${JSON.stringify(req.user)}`)
-			req.login(user, (err) => {
-				console.log('Inside req.login() callback')
-				console.log(`req.session.passport: ${JSON.stringify(req.session.passport)}`)
-				console.log(`req.user: ${JSON.stringify(req.user)}`)
-				return res.send('You were authenticated & logged in!\n');
-			})
-		})(req, res, next);
+		console.log(`req body: ${JSON.stringify(req.body)}`)
+		passport.authenticate(
+			'local',
+			{ successRedirect: '/graphql', failureRedirect: '/login' },
+			(err, user, info) => {
+				console.log(new Date(), err, user, info)
+				if(info) return res.send(info.message)
+				if(err) return next(err)
+				if(!user) return res.redirect('/login')
+				req.login(user, (err) => {
+					if(err) return next(err)
+					return res.redirect('/')
+				})
+			})(req, res, next)
 	})
 	if(process.env.__MODE__ === 'development')
 		app.use(cors((origin, callback) => {
