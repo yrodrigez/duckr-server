@@ -1,0 +1,9 @@
+type Duck {
+    data: String
+    created: User
+}
+
+input DuckInput {
+    data: String!
+    username: String!
+}

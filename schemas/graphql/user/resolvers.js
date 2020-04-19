@@ -8,25 +8,6 @@ const Query = {
 		console.log('Query on users findAll')
 		return dataSources.userAPI.findAll()
 	},
-
-	loginUser: async(_, { user }) => {
-		console.log(user)
-		passport.authenticate(LOGIN_STRATEGY.LOCAL,(err, user, info) => {
-			if(info) {
-				return console.warn(info.message)
-			}
-			if(err) {
-				return next(err)
-			}
-			//if (!user) { return res.redirect('/login'); }
-			/*req.login(user, (err) => {
-				if(err) {
-					return next(err)
-				}
-				return res.redirect('/authrequired')
-			})*/
-		})
-	}
 }
 
 const Mutation = {

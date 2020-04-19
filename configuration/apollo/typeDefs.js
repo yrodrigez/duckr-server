@@ -1,7 +1,6 @@
 import {gql} from 'apollo-server-express'
 import fs from 'fs'
 import path  from 'path'
-import {DocumentNode} from 'apollo-link'
 
 const walkSync = (dir, fileList = []) => {
   const files = fs.readdirSync(dir)

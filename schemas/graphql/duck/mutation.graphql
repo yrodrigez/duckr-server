@@ -1,0 +1,5 @@
+extend type Mutation {
+    createDuck(duck: DuckInput): Duck
+    editDuck(duck: DuckInput): Duck
+    deleteDuck(duck: DuckInput): Boolean
+}
