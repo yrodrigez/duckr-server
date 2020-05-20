@@ -6,8 +6,6 @@ import typeDefs from './typeDefs'
 import { LOGIN_STRATEGY, passport } from '../passport'
 import jwt from 'jsonwebtoken'
 
-console.log( `resolvers --> `, resolvers )
-
 const verifyJWTToken = ( token ) => new Promise( ( resolve, reject ) => {
   jwt.verify( token, process.env.JWT_SECRET, ( err, decodedToken ) => {
     if( err || !decodedToken ) {
@@ -33,12 +31,10 @@ const configureApollo = ( middleware, subscriptionHandlers ) => {
       ...typeDefs,
       resolvers,
       context: async( { req, res } ) => {
-
         const { authorization } = req.headers
-        const decoded = await verifyJWTToken( authorization )
-        const user = await UserDAL.findById( decoded.sub )
-        console.log(user)
-        // await passportAuthJWT(req, res)
+        const token = authorization && await verifyJWTToken( authorization )
+        const user = token && await UserDAL.findById( token.sub )
+
         return { user }
       },
       dataSources: () => ( {

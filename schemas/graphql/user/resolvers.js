@@ -1,32 +1,34 @@
 import { PubSub } from 'graphql-subscriptions'
-import { LOGIN_STRATEGY, passport } from '../../../configuration/passport'
+import { UserAlreadyExistsError } from '../errors'
 
 const pubSub = new PubSub()
 
 const Query = {
-	users: (_, __, { dataSources }) => {
-		console.log('Query on users findAll')
-		return dataSources.userAPI.findAll()
-	},
+  users: ( _, __, { dataSources } ) => {
+    return dataSources.userAPI.findAll()
+  },
 }
 
 const Mutation = {
-	createUser: async(_, { user }, { dataSources }) => {
-		try {
-			console.log(`Mutation createUser`)
-			await dataSources.userAPI.registerUser(user)
-			await pubSub.publish('userAdded', { userAdded: user })
-		} catch(e) {
-			console.error(e)
-		}
-		return user
-	},
+  createUser: async( _, { user }, { dataSources } ) => {
+    const { userAPI } = dataSources
+    try {
+      await userAPI.registerUser( user )
+      await pubSub.publish( 'userAdded', { userAdded: user } )
+
+      return user
+    } catch( e ) {
+      if( e.name === 'MongoError' && e.code === 11000 ) throw new UserAlreadyExistsError()
+
+      throw e
+    }
+  },
 }
 
 const Subscription = {
-	userAdded: {
-		subscribe: () => pubSub.asyncIterator(['userAdded']),
-	},
+  userAdded: {
+    subscribe: () => pubSub.asyncIterator( [ 'userAdded' ] ),
+  },
 }
 
 export default { Query, Mutation, Subscription }

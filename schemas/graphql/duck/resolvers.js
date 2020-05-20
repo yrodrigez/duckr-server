@@ -5,11 +5,9 @@ const pubSub = new PubSub()
 const Query = {
   ducks: ( root, args, { user } ) => {
     if( !user ) {
-      console.error( `Error: typeof user ${ typeof user }` )
       throw new UserNotFoundError()
     }
 
-    console.log( `Query ducks for user: ${ user }` )
     return []
   },
 }

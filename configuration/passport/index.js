@@ -1,7 +1,6 @@
 require( 'dotenv' ).config()
 import passport from 'passport'
 import LocalStrategy from 'passport-local'
-import uuid from 'uuid/v4'
 import UserDAL from '../../dal/UserDAL'
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt'
 import jwt from 'jsonwebtoken'

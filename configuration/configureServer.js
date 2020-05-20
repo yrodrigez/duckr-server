@@ -4,6 +4,7 @@ import { createServer } from 'http'
 import configureApollo from './apollo/ApolloConfiguration'
 import { passport } from './passport'
 import bodyParser from 'body-parser'
+import cookieParser from 'cookie-parser'
 
 
 const devOrigin = ( 'http://localhost:8081' )
@@ -16,6 +17,7 @@ const configureServer = () => {
   app.use( passport.initialize() )
   app.use( passport.session() )
   app.use( bodyParser.json() ) // support json encoded bodies
+  app.use( cookieParser() )
   app.use( bodyParser.urlencoded( { extended: true } ) )
 
   app.get( '/', ( req, res ) => {
@@ -26,19 +28,21 @@ const configureServer = () => {
    * Login
    */
   app.post( '/login', ( req, res, next ) => {
-    console.log( 'Inside POST /login callback' )
-    console.log( `req body: ${ JSON.stringify( req.body ) }` )
     passport.authenticate(
       'local',
       { successRedirect: '/graphql', failureRedirect: '/login' },
-      ( err, user ) => {
+      ( err, token ) => {
 
         if( err ) return next( err )
-        if( !user ) return res.redirect( '/login' )
+        if( !token ) return res.redirect( '/login' )
 
-        req.login( user, ( err ) => {
+        req.login( token, ( err ) => {
           if( err ) return next( err )
-          return res.json( { data: { token: user } } )
+
+
+          res.setHeader( 'authorization', token )
+          res.cookie( '__sessionToken', token, { secure: true, httpOnly: true } )
+          return res.redirect('/graphql');
         } )
       },
     )( req, res, next )
