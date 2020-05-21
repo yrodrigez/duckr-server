@@ -2,10 +2,6 @@ import configureServer from './configuration/configureServer'
 import { connectDB } from './dal'
 
 
-console.log(
-  `this is my secret!`,
-  process.env.JWT_SECRET,
-)
 connectDB().then(() => {
   const { server, apolloServer, PORT } = configureServer()
   server.listen( PORT, () => {

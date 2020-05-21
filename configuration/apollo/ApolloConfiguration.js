@@ -32,11 +32,15 @@ const configureApollo = ( middleware, subscriptionHandlers ) => {
       resolvers,
       context: async( { req, res } ) => {
         const { authorization } = req.headers
+        const { __sessionToken } = req.cookies
         const token = authorization && await verifyJWTToken( authorization )
+          || __sessionToken && await verifyJWTToken( __sessionToken )
         const user = token && await UserDAL.findById( token.sub )
 
         return { user }
       },
+      //introspection: true,
+      //playground: true,
       dataSources: () => ( {
         userAPI: UserDAL,
         duckAPI: DucksDAL,

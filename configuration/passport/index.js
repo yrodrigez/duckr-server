@@ -12,40 +12,36 @@ const LOGIN_STRATEGY = {
 }
 
 let opts = {
-  jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('JWT'),
+  jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme( 'JWT' ),
   secretOrKey: process.env.JWT_SECRET,
   algorithms: [ process.env.JWT_ALGORITHM ],
+  passReqToCallback: true,
 }
-console.log( JSON.stringify( opts ) )
-passport.use( LOGIN_STRATEGY.JWT, new JwtStrategy( opts, async ( payload, done ) => {
-  console.log(`${LOGIN_STRATEGY.JWT} strategy`, JSON.stringify(payload))
+passport.use( LOGIN_STRATEGY.JWT, new JwtStrategy( opts, ( payload, done ) => {
+  console.log( `${ LOGIN_STRATEGY.JWT } strategy`, JSON.stringify( payload ) )
 
-  return await UserDAL.findById( payload.sub ) ;
+  return UserDAL.findById( payload.sub )
 } ) )
 
 passport.use( LOGIN_STRATEGY.LOCAL, new LocalStrategy(
-  { usernameField: 'email', session: false },
-  async( email, password, onFinish ) => {
-    console.log( `Inside local strategy callback`, email, password, onFinish )
-    await UserDAL.findByEmailAndPassword( email, password, ( err, user ) => {
-      if( err ) return onFinish( err )
-      else {
-        console.log( `User found: ${ user }` )
+  { usernameField: 'email', passwordField: 'password', session: false, passReqToCallback: true },
+  async( req, email, password, done ) => {
+    console.log(email, password, done)
+    console.log(`strategy ${LOGIN_STRATEGY.LOCAL} `)
+    const user = await UserDAL.findByEmailAndPassword( email, password )
+    const { JWT_EXPIRATION, JWT_SECRET, JWT_ALGORITHM } = process.env
+    const payload = {
+      sub: user._id,
+      iat: Date.now() + parseInt( JWT_EXPIRATION ),
+      username: user.username,
+    }
+    const token = jwt.sign(
+      JSON.stringify( payload ),
+      JWT_SECRET,
+      { algorithm: JWT_ALGORITHM },
+    )
 
-        const payload = {
-          sub: user._id,
-          iat: Date.now() + parseInt( process.env.JWT_EXPIRATION ),
-          username: user.username,
-        }
-        const token = jwt.sign(
-          JSON.stringify( payload ),
-          process.env.JWT_SECRET,
-          { algorithm: process.env.JWT_ALGORITHM },
-        )
-
-        return onFinish( err, token )
-      }
-    } )
+    return done( null, token )
   },
 ) )
 
@@ -54,6 +50,7 @@ passport.serializeUser( ( user, done ) => {
 } )
 
 passport.deserializeUser( ( user, done ) => {
+  console.log(`deserializeUser Call!`)
   done( null, user )
 } )
 

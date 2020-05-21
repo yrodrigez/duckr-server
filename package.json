@@ -4,7 +4,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "tsc": "tsc index.ts && npm start",
     "start": "nodemon --exec babel-node index.js",
     "upgrade-interactive": "npm-check --update"
   },
@@ -28,6 +27,7 @@
     "babel-loader": "^8.0.6",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.19.0",
+    "connect-flash": "^0.1.1",
     "connect-mongo": "^3.2.0",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",

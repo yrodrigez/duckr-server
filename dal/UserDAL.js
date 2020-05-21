@@ -25,6 +25,7 @@ User.statics.findByUsername = function( username ) {
 }
 
 User.statics.findByEmailAndPassword = async function( email, password ) {
+  console.log(`User::findByEmailAndPassword - args: { email: ${email}, password: ${password} }`)
   const user = await this.findOne( { email } )
   if( !user && !user.password ) throw new Error( `Email: ${ email }, is not registered!` )
 

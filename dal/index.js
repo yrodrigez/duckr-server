@@ -8,7 +8,7 @@ const connectionOptions = {
 }
 
 const connectDB = () => mongoose.connect(
-  process.env.DATABASE_URL || 'mongodb://localhost:27017/rduckr', connectionOptions,
+  process.env.DATABASE_URL_DEV || 'mongodb://localhost:27017/rduckr', connectionOptions,
 )
 
 export { connectDB }
