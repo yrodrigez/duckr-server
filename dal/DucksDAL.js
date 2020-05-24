@@ -6,13 +6,17 @@ import Duck from '../schemas/ducks/Duck'
  * @param duck {Duck}
  * @returns {Promise<void>}
  */
-Duck.statics.save = async function( duck ) {
-  console.log(
-    `Saving duck: ${ JSON.stringify( duck, null, 2 ) }, 
-    For user: ${ JSON.stringify( duck.createdBy, null, 2 ) }`
-  )
-
-  return await this.save( duck )
+Duck.statics.createDuck = async function( { data, userId } ) {
+  return await this.create( {
+    data,
+    created: new Date().getTime(),
+    createdBy: userId,
+    visible: true,
+    likeCount: 0
+  } )
+}
+Duck.statics.queryAllDucks = function() {
+  return this.findAll().sort( { created: -1 } )
 }
 
 export default model( 'Duck', Duck )

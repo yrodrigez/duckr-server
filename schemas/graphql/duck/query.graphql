@@ -1,3 +1,4 @@
 extend type Query {
     ducks: [Duck]
+    duck(id: ID): Duck
 }

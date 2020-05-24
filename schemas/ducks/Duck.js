@@ -7,20 +7,19 @@ const Duck = new Schema(
       type: Number,
     },
     created: {
-      type: Date,
+      type: Number,
     },
-    content: {
+    data: {
       type: String,
     },
     createdBy: {
-      type: User,
+      type: Schema.Types.ObjectId,
+      ref: 'User'
     },
     visible: {
       type: Boolean,
     },
-    viewers: {
-      type: Array,
-    },
+    likeCount: Number,
     reDuck: {
       type: Schema.Types.ObjectId,
       ref: 'Duck'

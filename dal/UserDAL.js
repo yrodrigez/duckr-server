@@ -1,7 +1,7 @@
 import User from '../schemas/users/User'
+import LoginInformationDAL from './LoginInformationDAL'
 import { model } from 'mongoose'
 import bcrypt from 'bcrypt-nodejs'
-import { UserAlreadyExistsError } from '../schemas/graphql/errors'
 
 const cryptPassword = ( password ) => new Promise( ( cryptSuccess, cryptError ) => {
   bcrypt.genSalt( 10, ( err, salt ) => {
@@ -13,7 +13,7 @@ const cryptPassword = ( password ) => new Promise( ( cryptSuccess, cryptError ) 
 
 
 User.statics.registerUser = async function( user ) {
-  user.password = await cryptPassword( user.password )
+  user.password = user.password && await cryptPassword( user.password )
 
   return this.create( user )
 }
@@ -24,8 +24,15 @@ User.statics.findByUsername = function( username ) {
   } )
 }
 
+User.statics.getLastLogin = function( userId ) {
+  return LoginInformationDAL.findOne().sort( { date: -1 } ).where( { userId } )
+}
+
+User.statics.login = async function( info ) {
+  LoginInformationDAL.create( { ...info, date: new Date() } )
+}
+
 User.statics.findByEmailAndPassword = async function( email, password ) {
-  console.log(`User::findByEmailAndPassword - args: { email: ${email}, password: ${password} }`)
   const user = await this.findOne( { email } )
   if( !user && !user.password ) throw new Error( `Email: ${ email }, is not registered!` )
 
@@ -33,6 +40,10 @@ User.statics.findByEmailAndPassword = async function( email, password ) {
 
   if( match ) return user
   else new Error( 'Password does not match' )
+}
+
+User.statics.findByFacebookId = async function( id ) {
+  return this.findOne( { 'facebookInformation.profileId': id } )
 }
 
 User.statics.findAll = async function() {

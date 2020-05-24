@@ -1,4 +1,7 @@
+
 extend type Query {
     users: [User]
     loginUser(user: UserLoginInput!): User
+    logout(token: String): Boolean
+    userDucks(userId: ID): [Duck]
 }

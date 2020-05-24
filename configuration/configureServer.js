@@ -21,31 +21,40 @@ const configureServer = () => {
   app.use( bodyParser.urlencoded( { extended: true } ) )
 
   app.get( '/', ( req, res ) => {
-    res.send('OK')
+    res.send( 'OK' )
   } )
 
+  app.get( '/auth/facebook', passport.authenticate( LOGIN_STRATEGY.FACEBOOK ) )
+
+  app.get( '/auth/facebook/callback', passport.authenticate(
+    LOGIN_STRATEGY.FACEBOOK,
+    {
+      successRedirect: '/',
+      failureRedirect: '/login',
+    },
+  ) )
   /**
    * Login
    */
   app.post(
     '/login',
-    ( ( req, res, next ) => passport.authenticate(
+    ( req, res, next ) => passport.authenticate(
       LOGIN_STRATEGY.LOCAL,
       { successRedirect: '/graphql', failureRedirect: '/login' },
       ( err, token ) => {
         req.login( token, ( err ) => {
           if( err ) return res
-            .status(500)
-            .send('Authentication failure due to an internal server error')
+            .status( 500 )
+            .send( 'Authentication failure due to an internal server error' )
 
           if( !token ) return res.redirect( '/login' )
           res.setHeader( 'Authorization', token )
-          res.cookie( '__sessionToken', token, {httpOnly: true} )
+          res.cookie( '__sessionToken', token, { httpOnly: true } )
 
-          return res.redirect( '/' )
+          return res.send( { token } )
         } )
       },
-    )( req, res, next ) ),
+    )( req, res, next ),
   )
 
   if( process.env.__MODE__ === 'development' ) {

@@ -1,9 +1,10 @@
 type Duck {
     data: String
-    created: User
+    created: String
+    likeCount: Int
+    createdBy: User
 }
 
 input DuckInput {
     data: String!
-    username: String!
 }

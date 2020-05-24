@@ -1,5 +1,7 @@
 extend type Mutation {
-    createDuck(duck: DuckInput): Duck
+    duck(duck: DuckInput): Duck
     editDuck(duck: DuckInput): Duck
-    deleteDuck(duck: DuckInput): Boolean
+    deleteDuck(duckId: ID): Boolean
+    like(duckId: ID): Int
+    reduck(duckId: ID, userId: ID): ID
 }

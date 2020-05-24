@@ -1,6 +1,6 @@
 import configureServer from './configuration/configureServer'
 import { connectDB } from './dal'
-
+require( 'dotenv' ).config()
 
 connectDB().then(() => {
   const { server, apolloServer, PORT } = configureServer()

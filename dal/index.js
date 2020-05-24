@@ -1,10 +1,9 @@
 import mongoose from 'mongoose'
-import User from '../schemas/users/User'
-import Duck from '../schemas/ducks/Duck'
 
 const connectionOptions = {
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
+  useCreateIndex: true,
 }
 
 const connectDB = () => mongoose.connect(
@@ -12,4 +11,3 @@ const connectDB = () => mongoose.connect(
 )
 
 export { connectDB }
-export default { User, Duck }
