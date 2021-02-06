@@ -1,6 +1,6 @@
-import { Schema } from 'mongoose'
+import { Schema } from "mongoose";
 
-const userSchema = new Schema( {
+const userSchema = new Schema({
   username: {
     type: String,
     unique: true,
@@ -15,7 +15,17 @@ const userSchema = new Schema( {
       middleName: String,
     }),
     emails: Array,
-
+  }),
+  googleInformation: new Schema({
+    profileId: String,
+    provider: String,
+    displayName: String,
+    name: new Schema({
+      familyName: String,
+      givenName: String,
+      middleName: String,
+    }),
+    emails: Array,
   }),
   email: {
     type: String,
@@ -34,8 +44,7 @@ const userSchema = new Schema( {
     source: String,
   },
   isLogged: Boolean,
-} )
+});
 
-
-userSchema.index( { registration: 1 } )
-export default userSchema
+userSchema.index({ registration: 1 });
+export default userSchema;
