@@ -1,12 +1,12 @@
 import { model } from 'mongoose'
-import Duck from '../schemas/ducks/Duck'
+import Ducks from './ducks'
 
 /**
  *
- * @param duck {Duck}
+ * @param duck {Ducks}
  * @returns {Promise<void>}
  */
-Duck.statics.createDuck = async function( { data, userId } ) {
+Ducks.statics.createDuck = async function({ data, userId } ) {
   return await this.create( {
     data,
     created: new Date().getTime(),
@@ -15,8 +15,8 @@ Duck.statics.createDuck = async function( { data, userId } ) {
     likeCount: 0
   } )
 }
-Duck.statics.queryAllDucks = function() {
+Ducks.statics.queryAllDucks = function() {
   return this.findAll().sort( { created: -1 } )
 }
 
-export default model( 'Duck', Duck )
+export default model( 'Duck', Ducks )

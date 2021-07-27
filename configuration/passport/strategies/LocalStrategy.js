@@ -1,6 +1,6 @@
 import LocalStrategy from 'passport-local'
-import UserDAL from '../../../dal/UserDAL'
-import { UserNotFoundError } from '../../../schemas/graphql/errors'
+import UserDAL from '../../../model/UserDAL'
+import { UserNotFoundError } from '../../../graphql/errors'
 import { createAndSignToken } from './JwtUtilities'
 
 const localStrategyOptions = {

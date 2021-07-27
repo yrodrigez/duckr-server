@@ -1,7 +1,6 @@
-import { Schema } from 'mongoose'
-import User from '../users/User'
+import {Schema} from 'mongoose'
 
-const Duck = new Schema(
+export default new Schema(
   {
     stars: {
       type: Number,
@@ -26,6 +25,3 @@ const Duck = new Schema(
     },
   },
 )
-
-
-export default Duck

@@ -9,9 +9,5 @@ export default {
 	Query: {
 		...UserResolvers.Query,
 		...DuckResolvers.Query,
-	},
-	Subscription : {
-		...UserResolvers.Subscription,
-		...DuckResolvers.Subscription,
 	}
 }

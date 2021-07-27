@@ -9,7 +9,7 @@ require("dotenv").config();
 const { GOOGLE_APP_ID, GOOGLE_APP_SECRET } = process.env;
 import { createAndSignToken } from "./JwtUtilities";
 
-export default new OAuth2Strategy(
+/*export default new OAuth2Strategy(
   {
     clientID: GOOGLE_APP_ID,
     clientSecret: GOOGLE_APP_SECRET,
@@ -37,4 +37,4 @@ export default new OAuth2Strategy(
 
     return done(null, token);
   }
-);
+);*/

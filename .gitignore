@@ -3,4 +3,4 @@
 public/
 package-lock.json
 duckr-server.iml
-.env
+config.env

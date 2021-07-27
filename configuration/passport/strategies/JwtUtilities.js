@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import fetch from 'node-fetch'
-import UserDAL from '../../../dal/UserDAL'
+import UserDAL from '../../../model/UserDAL'
 
 export const createAndSignToken = async( user, req ) => {
   const { JWT_EXPIRATION, JWT_SECRET, JWT_ALGORITHM } = process.env

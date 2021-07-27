@@ -1,7 +1,4 @@
-import { PubSub } from 'graphql-subscriptions'
 import { UserAlreadyExistsError } from '../errors'
-
-const pubSub = new PubSub()
 
 const Query = {
   users: ( _, __, { dataSources } ) => {
@@ -14,7 +11,6 @@ const Mutation = {
     const { userAPI } = dataSources
     try {
       await userAPI.registerUser( user )
-      await pubSub.publish( 'userAdded', { userAdded: user } )
 
       return user
     } catch( e ) {
@@ -25,10 +21,6 @@ const Mutation = {
   },
 }
 
-const Subscription = {
-  userAdded: {
-    subscribe: () => pubSub.asyncIterator( [ 'userAdded' ] ),
-  },
-}
 
-export default { Query, Mutation, Subscription }
+
+export default { Query, Mutation }

@@ -8,7 +8,7 @@ import cookieParser from "cookie-parser";
 
 const devOrigin = "http://localhost:8081";
 
-const configureServer = () => {
+const configureServer =  async () => {
   const app = express();
   const PORT = parseInt(process.env.PORT) || 8080;
 
@@ -40,7 +40,7 @@ const configureServer = () => {
    */
   app.get(
     "/auth/google",
-    passport.authenticate(LOGIN_STRATEGY.GOOGLE, {
+      passport.authenticate(LOGIN_STRATEGY.GOOGLE, {
       scope: "https://www.google.com/m8/feeds",
     })
   );
@@ -90,8 +90,7 @@ const configureServer = () => {
   }
 
   const server = createServer(app);
-  const apolloServer = configureApollo({ app }, server);
-
+  const apolloServer = await configureApollo({ app }, server);
   return {
     server,
     apolloServer,

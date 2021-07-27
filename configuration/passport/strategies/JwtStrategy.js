@@ -1,11 +1,16 @@
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt'
-import UserDAL from '../../../dal/UserDAL'
-require( 'dotenv' ).config()
+import UserDAL from '../../../model/UserDAL'
+
+require( 'dotenv' ).config({
+  path: process.cwd()+ '/config.env'
+})
+
+const {JWT_SECRET, JWT_ALGORITHM} = process.env
 
 let opts = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme( 'JWT' ),
-  secretOrKey: process.env.JWT_SECRET,
-  algorithms: [ process.env.JWT_ALGORITHM ],
+  secretOrKey: JWT_SECRET,
+  algorithms:  JWT_ALGORITHM.split(',') ,
   passReqToCallback: true,
 }
 

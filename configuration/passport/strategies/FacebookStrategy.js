@@ -1,7 +1,6 @@
 import FacebookStrategy from 'passport-facebook'
-import UserDAL from '../../../dal/UserDAL'
+import UserDAL from '../../../model/UserDAL'
 
-require( 'dotenv' ).config()
 const { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET } = process.env
 import { createAndSignToken } from './JwtUtilities'
 
@@ -13,6 +12,7 @@ export default new FacebookStrategy(
     passReqToCallback: true,
   },
   async function( req, accessToken, refreshToken, profile, done ) {
+    console.log(req)
     const existingUser = await UserDAL.findByFacebookId( profile.id )
 
     if( existingUser ) {
