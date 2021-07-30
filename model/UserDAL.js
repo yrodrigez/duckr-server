@@ -12,48 +12,48 @@ const cryptPassword = (password) =>
     });
   });
 
-const UserDAL = {
-  registerUser: async function (user) {
-    user.password = user.password && (await cryptPassword(user.password));
+User.statics.registerUser = async function (user) {
+  user.password = user.password && (await cryptPassword(user.password));
 
-    return this.create(user);
-  },
-
-  findByUsername: function (username) {
-    return this.findOne({
-      username,
-    })
-  },
-  getLastLogin: function (userId) {
-    return LoginInformationDAL.findOne().sort({date: -1}).where({userId});
-  },
-
-  login: async function (info) {
-    LoginInformationDAL.create({...info, date: new Date()});
-  },
-  findByEmailAndPassword: async function (email, password) {
-    const user = await this.findOne({email});
-    if (!user && !user.password)
-      throw new Error(`Email: ${email}, is not registered!`);
-
-    const match = bcrypt.compareSync(password, user.password);
-
-    if (match) return user;
-    else new Error("Password does not match");
-  },
-
-  findByFacebookId: async function (id) {
-    return this.findOne({"facebookInformation.profileId": id});
-  },
-
-  findByGoogleProfileId: async function (id) {
-    return this.findOne({"googleInformation.profileId": id});
-  },
-
-  findAll: async function () {
-    return await this.find();
-  }
+  return this.create(user);
 }
 
+User.statics.findByUsername = function (username) {
+  return this.findOne({
+    username,
+  })
+}
+
+User.statics.getLastLogin = function (userId) {
+  return LoginInformationDAL.findOne().sort({date: -1}).where({userId});
+}
+
+User.statics.login = async function (info) {
+  LoginInformationDAL.create({...info, date: new Date()});
+}
+
+User.statics.findByEmailAndPassword = async function (email, password) {
+  const user = await this.findOne({email});
+  if (!user && !user.password)
+    throw new Error(`Email: ${email}, is not registered!`);
+
+  const match = bcrypt.compareSync(password, user.password);
+
+  if (match) return user;
+  else new Error("Password does not match");
+}
+
+User.statics.findByFacebookId = async function (id) {
+  return this.findOne({"facebookInformation.profileId": id});
+}
+
+User.statics.findByGoogleProfileId = async function (id) {
+  return this.findOne({"googleInformation.profileId": id});
+}
+
+User.statics.findAll = async function () {
+  return await this.find();
+
+}
 
 export default model("User", User);

@@ -10,7 +10,7 @@ const {JWT_SECRET, JWT_ALGORITHM} = process.env
 let opts = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme( 'JWT' ),
   secretOrKey: JWT_SECRET,
-  algorithms:  JWT_ALGORITHM.split(',') ,
+  algorithms:  JWT_ALGORITHM,
   passReqToCallback: true,
 }
 

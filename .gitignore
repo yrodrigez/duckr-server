@@ -4,3 +4,5 @@ public/
 package-lock.json
 duckr-server.iml
 config.env
+cert.pem
+key.pem

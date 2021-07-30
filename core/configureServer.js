@@ -1,14 +1,25 @@
 import express from "express";
 import cors from "cors";
-import { createServer } from "http";
+import {createServer} from "https";
 import configureApollo from "./apollo/ApolloConfiguration";
-import { LOGIN_STRATEGY, passport } from "./passport";
+import {LOGIN_STRATEGY, passport} from "./passport";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
+import fs from "fs"
+import path from "path";
 
-const devOrigin = "http://localhost:8081";
+const cert = fs.readFileSync('cert.pem')
+const key = fs.readFileSync('key.pem')
+const devOrigin = "http://localhost:8080";
 
-const configureServer =  async () => {
+const nextPath = () => process.cwd() + `/webapp/.next/server/pages/`
+const routes = {
+  register: path.resolve(nextPath() + `register.html`),
+  login: path.resolve(nextPath() + `login.html`)
+}
+
+
+const configureServer = async () => {
   const app = express();
   const PORT = parseInt(process.env.PORT) || 8080;
 
@@ -16,11 +27,13 @@ const configureServer =  async () => {
   app.use(passport.session({}));
   app.use(bodyParser.json()); // support json encoded bodies
   app.use(cookieParser(process.env.COOKIE_SECRET));
-  app.use(bodyParser.urlencoded({ extended: true }));
+  app.use(bodyParser.urlencoded({extended: true}));
 
   app.get("/", (req, res) => {
-    res.send("OK");
+    res.sendFile(routes.login);
   });
+
+  app.get('/register', (_, res) => res.sendFile(routes.register))
 
   /**
    *Facebook Login
@@ -29,10 +42,23 @@ const configureServer =  async () => {
 
   app.get(
     "/auth/facebook/callback",
-    passport.authenticate(LOGIN_STRATEGY.FACEBOOK, {
-      successRedirect: "/",
+    (req, res, next) => passport.authenticate(LOGIN_STRATEGY.FACEBOOK, {
+      successRedirect: "/graphql",
       failureRedirect: "/login",
-    })
+    }, (error, token) => {
+      req.login(token, err => {
+        if (err)
+          return res
+            .status(500)
+            .send("Authentication failure due to an internal server error");
+
+        if (!token) return res.redirect("/login");
+        res.setHeader("Authorization", token);
+        res.cookie("__sessionToken", token, {httpOnly: true});
+
+        return res.redirect(`/graphql`);
+      });
+    })(req, res, next)
   );
 
   /**
@@ -40,7 +66,7 @@ const configureServer =  async () => {
    */
   app.get(
     "/auth/google",
-      passport.authenticate(LOGIN_STRATEGY.GOOGLE, {
+    passport.authenticate(LOGIN_STRATEGY.GOOGLE, {
       scope: "https://www.google.com/m8/feeds",
     })
   );
@@ -48,7 +74,7 @@ const configureServer =  async () => {
   app.get(
     "/auth/google/callback",
     passport.authenticate(LOGIN_STRATEGY.GOOGLE, {
-      successRedirect: "/",
+      successRedirect: "/graphql",
       failureRedirect: "/login",
     })
   );
@@ -59,9 +85,9 @@ const configureServer =  async () => {
   app.post("/login", (req, res, next) =>
     passport.authenticate(
       LOGIN_STRATEGY.LOCAL,
-      { successRedirect: "/graphql", failureRedirect: "/login" },
+      {successRedirect: "/graphql", failureRedirect: "/login"},
       (err, token) => {
-        req.login(token, (err) => {
+        req.login(token, err => {
           if (err)
             return res
               .status(500)
@@ -69,9 +95,9 @@ const configureServer =  async () => {
 
           if (!token) return res.redirect("/login");
           res.setHeader("Authorization", token);
-          res.cookie("__sessionToken", token, { httpOnly: true });
+          res.cookie("__sessionToken", token, {httpOnly: true});
 
-          return res.send({ token });
+          return res.send({token});
         });
       }
     )(req, res, next)
@@ -89,8 +115,8 @@ const configureServer =  async () => {
     );
   }
 
-  const server = createServer(app);
-  const apolloServer = await configureApollo({ app }, server);
+  const server = createServer({key, cert}, app);
+  const apolloServer = await configureApollo({app}, server);
   return {
     server,
     apolloServer,

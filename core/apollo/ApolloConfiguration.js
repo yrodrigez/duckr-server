@@ -1,4 +1,7 @@
 import {ApolloServer} from 'apollo-server-express'
+import {
+  ApolloServerPluginLandingPageGraphQLPlayground
+} from "apollo-server-core";
 import UserDAL from '../../model/UserDAL'
 import DucksDAL from '../../model/DucksDAL'
 import resolvers from '../../graphql/resolvers'
@@ -30,6 +33,9 @@ const configureApollo = async (middleware) => {
     {
       ...typeDefs,
       resolvers,
+      plugins: [
+        ApolloServerPluginLandingPageGraphQLPlayground()
+      ],
       context: async ({req, res}) => {
         const {authorization} = req.headers
         const {__sessionToken} = req.cookies
